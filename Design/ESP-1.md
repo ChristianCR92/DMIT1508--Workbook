@@ -4,7 +4,7 @@
 
 ### ONF
 
-**Customer:** (<b class="pk">Customer Number</b>,FirstName, LastName, Address, City, Province , PostalCode,HomePhone)
+**Customer:** <span class="md"><b class="pk">Customer Number</b>,FirstName, LastName, Address, City, Province , PostalCode,HomePhone) </span>
 
 ### 1NF - 3NF 
 *No changes to the entity/table in 1NF to 3NF.*
@@ -15,7 +15,7 @@
 ## Customer orders View
 
 ###  0NF
-**Order:** (<b class= "pk"> OrderNumber</b>,CutomerNumber,FirstName,LastName,Address,City,Province,PostalCode,Phone,Date, <b class="rg">ItemNumber,Description,Quantity,CurrentPrice,SellingPrice,Amount</b>,Subtotal, GST,Total)
+**Order:** <span class= "md"><b class="pk" OrderNumber</b>,CutomerNumber,FirstName,LastName,Address,City,Province,PostalCode,Phone,Date, <b class="rg">ItemNumber,Description,Quantity,CurrentPrice,SellingPrice,Amount</b>,Subtotal, GST,Total </span>
 
 
 -----
@@ -106,7 +106,7 @@ text-align: center;
     font-size: 1.2em;
     font-weight: bold;
 }
-rg::after{
+.rg::after{
     content: '\007D';
     color: darkorange;
     font-size: 1.2em;
