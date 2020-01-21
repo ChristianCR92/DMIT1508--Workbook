@@ -94,6 +94,12 @@ text-align: center;
         text-align:center;
 
 }
+.rg{
+    display:inline-block;
+    color:inherit;
+    font-size: 1em;
+    font-weight: normal;
+}
 .rg::before {
     content:'\007B';
     color: darkorange;
