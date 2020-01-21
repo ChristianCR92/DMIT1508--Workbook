@@ -15,7 +15,17 @@
 ## Customer orders View
 
 ###  0NF
-**Order:** <span class= "md"><b class="pk" OrderNumber</b>,CutomerNumber,FirstName,LastName,Address,City,Province,PostalCode,Phone,Date, <b class="rg">ItemNumber,Description,Quantity,CurrentPrice,SellingPrice,Amount</b>,Subtotal, GST,Total </span>
+**Order:** <span class= "md"><b class="pk" OrderNumber</b>,CustomerNumber,FirstName,LastName,Address,City,Province,PostalCode,Phone,Date, <b class="rg">ItemNumber,Description,Quantity,CurrentPrice,SellingPrice,Amount</b>,Subtotal, GST,Total </span>
+
+
+### 1NF
+**Order:** <span class= "md"><b class="pk">OrderNumber</b>, CustomerNumber,FirstName,LastName,Address,City,Province,PostalCode,Phone,Date,Subtotal, GST,Total</span>
+
+**OrderDetail:** <span class="md"><b class="pk"><u class="fk">OrderNumber</u>, ItemNumber</b> Description, Quantity, CurrentPrice,SellingPrice,Amount</span>
+
+### 2NF
+**OrderDetail:** <span class="md"> <b class="pk">OrderNumber</u> <u class="fk">ItemNumber</u></b>,Quantity,SellingPrice,Amount </span>
+
 
 
 -----
