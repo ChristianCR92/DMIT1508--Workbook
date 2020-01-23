@@ -10,7 +10,7 @@
 *No changes to the entity/table in 1NF to 3NF.*
 
 ### ERD
->TODO: Place image here
+![Customers View](./ESP.png)
 
 ## Customer orders View
 
