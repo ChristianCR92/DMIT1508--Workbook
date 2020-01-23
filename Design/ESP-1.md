@@ -11,6 +11,7 @@
 
 ### ERD
 ![Customers View](./ESP.png)
+![Customers View](./ESP-ESP-1-CustomerOrderView.png)
 
 ## Customer orders View
 
