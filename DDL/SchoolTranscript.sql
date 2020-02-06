@@ -105,7 +105,7 @@ CREATE NONCLUSTERED INDEX IX_StudentCourses_CourseNumber
 ALTER TABLE Students
 	ADD PostalCode char(6) NULL
 	-- Adding this as a mullable column,because students already exist, and we don't have postal codes for those students.
-
+	GO -- I have to break the above code as a separate batch from the following code 
 	--2)make sure the PostalCode follows the correct Pater A#A#A#
 
 ALTER TABLE Students
