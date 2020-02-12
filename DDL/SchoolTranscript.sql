@@ -13,6 +13,9 @@ GO
     DROP TABLE Courses
     IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Students')
     DROP TABLE Students
+
+	IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Invoice')
+    DROP TABLE Invoice
 /* === Create Tables === */ 
 CREATE TABLE Students
 (
@@ -23,9 +26,11 @@ CREATE TABLE Students
     GivenName       varchar(50)     NOT NULL,
     Surname         varchar(50) 
 		CONSTRAINT CK_Students_Surname
-				CHECK (Surname LIKE '__%')			-- % is a wildcard for zero or more characters(letter, digit, or other character), LIKE allows us to go a "pattern-match of values"
+				CHECK (Surname LIKE '__%')		
+				-- % is a wildcard for zero or more characters(letter, digit, or other character), LIKE allows us to go a "pattern-match of values"
 				-- _ is a wildcard for a  single character (letter, digit, or other character)
---				CHECK (Surname LIKE '[a-z] [a-z]%')				-- two letters plus any other chars , [] are used to represent a range or set of characters that are allowed
+				-- CHECK (Surname LIKE '[a-z] [a-z]%')			
+				-- two letters plus any other chars , [] are used to represent a range or set of characters that are allowed
 									NOT NULL,
     DateOfBirth     datetime        
 			CONSTRAINT CK_Students_DateOfBirth
@@ -136,3 +141,4 @@ GST				money		NOT NULL,
 Total			AS Subtotal+GST		-- This is a Computed Column
 )
 
+SELECT * from Invoice

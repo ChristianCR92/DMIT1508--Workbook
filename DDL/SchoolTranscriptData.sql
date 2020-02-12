@@ -23,7 +23,7 @@ VALUES('Dan', 'G', '19720514 10:34:09 PM') */
 
 INSERT INTO Courses(Number,[Name], Credits, [Hours],Cost) 
 VALUES ('DMIT-1508','Database Fundamentals',3.0,60,750),
-	   ('CPSC-1012','Programming FUndamentals',3.0,60,750),
+	   ('CPSC-1012','Programming Fundamentals',3.0,60,750),
 	   ('DMIT-1720','OOP Fundamentals',4.5,90,850),
 	   ('DMIT-2210','Agile Development',4.5,90,850),
 	   ('DMIT-1718','Software Testing',4.5,90,850)
