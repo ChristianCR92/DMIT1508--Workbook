@@ -64,7 +64,7 @@ WHERE   CourseId = 'DMIT152'
 --5.	Select the average payment amount for payment type 5
 -- TODO: Student Answer Here - Hint: It's in the Payment table....
 
-SELECT AVG(Amount) as 'Average payment'
+SELECT AVG(Amount) as 'Average payment for payment type 5'
 FROM Payment
 
 
