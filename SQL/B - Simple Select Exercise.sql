@@ -64,6 +64,9 @@ WHERE   CourseId = 'DMIT152'
 --5.	Select the average payment amount for payment type 5
 -- TODO: Student Answer Here - Hint: It's in the Payment table....
 
+SELECT AVG(Amount) as 'Average payment'
+FROM Payment
+
 
 -- Given that there are some other aggregate methods like MAX(columnName) and MIN(columnName), complete the following two questions:
 --6. Select the highest payment amount
