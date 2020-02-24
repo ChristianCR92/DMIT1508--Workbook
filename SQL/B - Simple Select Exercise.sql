@@ -5,6 +5,12 @@
 Use [A01-School]
 GO
 
+--Q. What is the average of the following numbers?
+-- 97 43 53 29 40 77 10 55 37 82
+
+
+
+
 --1.	Select the average Mark from all the Marks in the registration table
 SELECT  AVG(Mark) AS 'Average Mark'
 FROM    Registration
