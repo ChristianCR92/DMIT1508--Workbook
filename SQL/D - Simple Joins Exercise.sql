@@ -95,7 +95,10 @@ WHERE   S.StudentID = 199912010
 -- TODO: Student Answer Here...
 SELECT FirstName + ' ' + LastName AS 'Full Name'
 FROM Student AS S
-INNER JOIN Registration  AS R ON S.CourseId=S.CourseID
+INNER JOIN Registration  AS R ON S.StudentID=R.StudentID
+INNER JOIN Course AS C ON R.CourseId=C.CourseId
+WHERE R.Mark >= 80
+-- WORK IN PROGRESS
 
 --10. Modify the script from the previous question to show the Course Name along with the ID.
 -- TODO: Student Answer Here...
