@@ -64,28 +64,37 @@ WHERE   CourseId = 'DMIT152'
 --5.	Select the average payment amount for payment type 5
 -- TODO: Student Answer Here - Hint: It's in the Payment table....
 
-SELECT AVG(Amount) as 'Average payment for payment type 5'
+SELECT AVG(Amount) AS 'Average payment for payment type 5'
 FROM Payment
-
 
 -- Given that there are some other aggregate methods like MAX(columnName) and MIN(columnName), complete the following two questions:
 --6. Select the highest payment amount
 -- TODO: Student Answer Here
-
+SELECT MAX(Amount) AS 'Highest payment amount'
+FROM Payment
 
 --7.	 Select the lowest payment amount
 -- TODO: Student Answer Here
 
+SELECT MIN(Amount) AS 'Lowest payment amount'
+FROM Payment
 
 --8. Select the total of all the payments that have been made
 -- TODO: Student Answer Here
+SELECT COUNT(PaymentID) AS 'Total of payments'
+FROM Payment
 
 --9. How many different payment types does the school accept?
 -- Do a bit of exploratory selects
-SELECT PaymentTypeDescription
-FROM   PaymentType
+SELECT COUNT (PaymentTypeID)AS 'Payment types'
+FROM PaymentType
+--SELECT * from PaymentType
+
 -- TODO: Student Answer Here
 
 --10. How many students are in club 'CSS'?
 -- TODO: Student Answer Here
 
+SELECT COUNT(StudentID) AS 'Students in Club "CSS"'
+FROM Activity
+WHERE ClubId ='CSS'
