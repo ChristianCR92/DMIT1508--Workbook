@@ -104,17 +104,34 @@ FROM Course
 GROUP BY CourseHours,CourseName
 
 --11. Which teachers are getting the best results from the courses they teach? Display the staff ID and the average course mark, sorted by the course mark from highest to lowest.
-/*
-SELECT StaffID,Mark,
-AVG(Mark) 
+SELECT StaffID,
+AVG(Mark) AS 'Average course mark'
 FROM Registration
 GROUP BY StaffID,Mark
-*/
+ORDER BY(Mark) DESC
+
 --12. How many male and female students do we have?
 SELECT Gender,
 COUNT(Gender) as 'Total'
 from Student
 GROUP BY Gender
 --13. Show the average balance owing for male and female students.
+SELECT S.Gender,
+AVG(BalanceOwing) AS  'Balance Owing'
+FROM Student AS S
+GROUP BY S.BalanceOwing,S.Gender
 
 --14. How many students participate in school clubs? Display the club id and the number of students. (Hint: You should be using the Activity table for this question.)
+
+SELECT DISTINCT (A.ClubId) AS 'clubs',
+COUNT (A.StudentID) AS 'Club Members'
+FROM Activity AS A
+GROUP BY A.ClubId,A.StudentID
+
+SELECT A.StudentID AS 'Enrolled',
+COUNT (A.StudentID) AS 'Club Members'
+FROM Activity AS A
+GROUP BY A.StudentID
+--SELECT * from Activity 
+
+--WORK IN PROGRESS
