@@ -1,6 +1,11 @@
 --Inner Joins With Aggregates Exercises
 USE [A01-School]
 GO
+SELECT PositionDescription, 
+        StaffID
+FROM Staff AS S
+    INNER JOIN Position AS P ON P.PositionID = S.PositionID
+ORDER BY PositionDescription
 
 --1. How many staff are there in each position? Select the number and Position Description
 SELECT  PositionDescription,                    --  <-- non-aggregate
@@ -25,8 +30,14 @@ ORDER BY 'Average Mark' DESC
 
 --3. How many payments where made for each payment type. Display the PaymentTypeDescription and the count.
  -- TODO: Student Answer Here... 
+ SELECT PaymentID,
+        COUNT(P.PaymentTypeID) AS 'Payment'
+ FROM Payment as P
+ GROUP BY PaymentTypeDescription
 
- 
+
+
+ SELECT PaymentID from Payment
 --4. Select the average Mark for each student. Display the Student Name and their average mark. Use table aliases in your FROM & JOIN clause.
 SELECT  S.FirstName  + ' ' + S.LastName AS 'Student Name',
         AVG(R.Mark)                     AS 'Average'

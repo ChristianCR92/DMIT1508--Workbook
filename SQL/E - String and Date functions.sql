@@ -15,8 +15,8 @@ GO
     FROM   Staff
     ORDER BY 1 -- sorted by the first column
 
-	-- SUBSTRING
-	SELECT SUBSTRING('Hello World', 1, 2)
+	-- SUBSTRING -- SQL counts starting from 1, not like programming which is 0.
+	SELECT SUBSTRING('Hello World', 1, 2) -- first number is the position, second number is amount of characters to display.
 	SELECT SUBSTRING('To be or not to be', 10, 3)
 	-- REVERSE
     SELECT REVERSE('Dan')
@@ -91,10 +91,15 @@ WHERE   Mark IS NOT NULL
   AND   LEFT(Semester, 4) = 2004
 
 -- 6. select last three characters of all the courses
-
+SELECT RIGHT (CourseName,3) AS 'Last 3 characters of course'
+FROM Course
+ORDER BY 1
 
 -- 7. Select the characters in the position description from characters 8 to 13 for PositionID 5
-
+SELECT CHARINDEX (PositionDescription,8) AS 'Characters 8 to 13 for PositionID 5'
+FROM Position
+WHERE PositionID=5
+Select PositionDescription from Position
 
 -- 8. Select all the Student First Names as upper case.
 
@@ -119,7 +124,7 @@ WHERE   Mark IS NOT NULL
     UPPER ( character_expression )                                          SELECT UPPER('boring')
     REPLACE ( string_expression , string_pattern , string_replacement )     SELECT REPLACE('Daniel', 'iel', 'YELL')
 
-
+SELECT CHARINDEX('')
 
     DATE Functions
     ==============
