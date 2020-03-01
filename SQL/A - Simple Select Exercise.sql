@@ -61,7 +61,7 @@ SELECT  CourseId AS 'Course ID', CourseName AS 'Course Name'
 FROM    Course
 
 --4. Select all the course information for courseID 'DMIT101'
--- I will mark the following as a ZERO
+-- I will mark the following as a ZERO 
 --SELECT  * -- All columns
 --FROM    Course
 SELECT CourseID, CourseName, CourseHours, MaxStudents, CourseCost
@@ -121,7 +121,7 @@ WHERE   WithdrawYN IS NULL -- we use IS NULL instead of = NULL, because = NULL w
 
 
 /*
-Explore the database - use * for a Quick n' Dirty check
+Explore the database - use * for a Quick n' Dirty check. DON'T USE IT IN LABS!
 SELECT * FROM Registration
 */
 
@@ -133,7 +133,7 @@ WHERE   WithdrawYN = 'Y'
 --8.    Select the studentID's, CourseID and mark where the Mark is
 --      between 70 and 80 and the courseID is DMIT223 or DMIT168
 SELECT  R.StudentID, R.CourseId, R.Mark
-FROM    Registration R
+FROM    Registration AS R
 WHERE   R.Mark BETWEEN 70 AND 80
   AND   (R.CourseId = 'DMIT223' OR R.CourseId = 'DMIT168')
 -- alternate answer to #8
