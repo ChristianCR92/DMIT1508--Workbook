@@ -41,9 +41,9 @@ ORDER BY 'Staff Full Name', CourseId
 
 --3.	Select all the Club ID's and the Student full names that are in them
 -- TODO: Student Answer Here...
-SELECT  ClubId, FirstName + ' ' + LastName AS 'Student Full Name'
+SELECT  A.ClubId, FirstName + ' ' + LastName AS 'Student Full Name'
 FROM    Activity AS A
-    INNER JOIN Student S ON A.StudentID = S.StudentID
+    INNER JOIN Student AS S ON A.StudentID = S.StudentID
 
 --4.	Select the Student full name, courseID's and marks for studentID 199899200.
 SELECT  S.FirstName + ' ' + S.LastName AS 'Student Name',
@@ -56,12 +56,12 @@ WHERE   S.StudentID = 199899200
 
 --5.	Select the Student full name, course names and marks for studentID 199899200.
 -- TODO: Student Answer Here...
-SELECT  FirstName + ' ' + LastName AS 'Student',
-        CourseName,
-        Mark
-FROM    Student S
-    INNER JOIN Registration R ON R.StudentID = S.StudentID
-    INNER JOIN Course C ON C.CourseId = R.CourseId
+SELECT  S.FirstName + ' ' + S.LastName AS 'Student',
+        C.CourseName,
+        R.Mark
+FROM    Student AS S   
+    INNER JOIN Registration AS R ON R.StudentID = S.StudentID
+    INNER JOIN Course AS C ON C.CourseId = R.CourseId
 WHERE   S.StudentID = '199899200'
 
 --6.	Select the CourseID, CourseNames, and the Semesters they have been taught in

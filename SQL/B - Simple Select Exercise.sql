@@ -7,7 +7,7 @@ GO
 
 --Q. What is the average of the following numbers?
 -- 97 43 53 29 40 77 10 55 37 82
-
+--SELECT 97 + 43+ 53 +29+ 40+ 77+ 10+ 55+ 37+ 82 / 10
 
 
 
@@ -53,7 +53,7 @@ WHERE   CourseId = 'DMIT152'
 
 --4.b   Select how many students are or have been in DMIT152
 --      SELECT * FROM Registration WHERE CourseId = 'DMIT152'
-SELECT  COUNT(StudentID)
+SELECT  COUNT(StudentID) 
 FROM    Registration
 WHERE   CourseId = 'DMIT152'
     -- BTW, what course is 'DMIT152'???
@@ -81,14 +81,18 @@ FROM Payment
 
 --8. Select the total of all the payments that have been made
 -- TODO: Student Answer Here
-SELECT COUNT(PaymentID) AS 'Total of payments'
+-- Total amount paid
+SELECT SUM(Amount) AS 'Total amount paid'
+FROM Payment
+--Total amount of payments
+SELECT COUNT (PaymentID) as 'Total of payments'
 FROM Payment
 
 --9. How many different payment types does the school accept?
 -- Do a bit of exploratory selects
 SELECT COUNT (PaymentTypeID)AS 'Payment types'
 FROM PaymentType
---SELECT * from PaymentType
+--SELECT PaymentTypeID from PaymentType
 
 -- TODO: Student Answer Here
 

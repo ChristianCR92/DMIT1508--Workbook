@@ -152,6 +152,7 @@ WHERE   R.Mark = 80 OR R.Mark = 85
 -- _ is a wildcard for a single character
 -- % is a wildcard for zero or more characters
 -- [] is a pattern for a single character matching the pattern in the square brackets
+
 --9. Select the students first and last names who have last names starting with S
 SELECT  FirstName, LastName
 FROM    Student

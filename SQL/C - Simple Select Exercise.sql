@@ -74,7 +74,7 @@ HAVING COUNT(StudentID) >= 2
 SELECT MAX(Amount) AS 'Highest',
        MIN(Amount) AS 'Lowest',
        AVG(Amount) AS 'Average'
-  --    , PaymentTypeID
+      --, PaymentTypeID
 FROM   Payment
 GROUP BY PaymentTypeID
 
@@ -87,14 +87,15 @@ SELECT  ClubId,
 COUNT (ClubId) AS 'Club Members'
 FROM    Activity
 GROUP BY ClubId
-
 --SELECT StudentID,ClubID from Activity
+
 -- 9. Which clubs have 3 or more students in them?
 -- TODO: Student Answer Here....
 SELECT ClubId
 FROM Activity
 GROUP BY ClubId
 HAVING COUNT(ClubId)>=3
+
 
 --10. Grouping the courses by the number of hours in each course, what is the average cost of those courses? Display the course hours and the average cost.
 
@@ -120,7 +121,6 @@ SELECT S.Gender,
 AVG(BalanceOwing) AS  'Balance Owing'
 FROM Student AS S
 GROUP BY S.BalanceOwing,S.Gender
-
 --14. How many students participate in school clubs? Display the club id and the number of students. (Hint: You should be using the Activity table for this question.)
 
 SELECT A.ClubId AS 'Club',
