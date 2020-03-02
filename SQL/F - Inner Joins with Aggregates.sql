@@ -1,6 +1,7 @@
 --Inner Joins With Aggregates Exercises
 USE [A01-School]
 GO
+
 SELECT PositionDescription, 
         StaffID
 FROM Staff AS S
@@ -24,22 +25,18 @@ SELECT  PositionDescription FROM Position -- There are 7 positions...
 --2. Select the average mark for each course. Display the CourseName and the average mark. Sort the results by average in descending order.
 SELECT  CourseName, AVG(Mark) AS 'Average Mark'
 FROM    Registration AS R
-    INNER JOIN Course AS C ON R.CourseId = C.CourseId
+    INNER JOIN Course AS C ON C.CourseId = R.CourseId
 GROUP BY CourseName
 ORDER BY 'Average Mark' DESC
 
 --3. How many payments where made for each payment type. Display the PaymentTypeDescription and the count.
  -- TODO: Student Answer Here... 
- SELECT PaymentID,PaymentTypeID,
-        COUNT(P.PaymentID) AS 'Payment'
- FROM Payment as P
- INNER JOIN PaymentType AS PT ON P.PaymentType=PT.PaymentTypeDescription
- GROUP BY PaymentID,P.PaymentTypeID
- -- WORK ON THIS ONE-- 
+ SELECT PT.PaymentTypeDescription AS 'Payment Type',
+        COUNT(P.PaymentID) AS 'Payments'
+ FROM Payment AS P
+    INNER JOIN PaymentType AS PT ON PT.PaymentTypeID = P.PaymentTypeID
+GROUP BY PT.PaymentTypeDescription
 
-
-
- SELECT PaymentID from Payment
 --4. Select the average Mark for each student. Display the Student Name and their average mark. Use table aliases in your FROM & JOIN clause.
 SELECT  S.FirstName  + ' ' + S.LastName AS 'Student Name',
         AVG(R.Mark)                     AS 'Average'
@@ -51,11 +48,31 @@ GROUP BY    S.FirstName  + ' ' + S.LastName  -- Since my non-aggregate is an exp
 
 --5. Select the same data as question 4 but only show the student names and averages that are 80% or higher. (HINT: Remember the HAVING clause?)
  -- TODO: Student Answer Here... 
-
+ SELECT S.FirstName +' ' + S.LastName AS 'Student Name', 
+ AVG(R.Mark) As 'Average'
+ FROM Registration AS R
+        INNER JOIN Student AS S
+          ON S.StudentID=R.StudentID
+GROUP BY S.FirstName + ' '+S.LastName
+HAVING AVG(R.Mark)>=80
 
 --6. What is the highest, lowest and average payment amount for each payment type Description?
  -- TODO: Student Answer Here... 
+ SELECT MAX(Amount) as 'Highest',
+        MIN(Amount) as 'Lowest',
+        AVG (Amount) as 'Average',PT.PaymentTypeDescription
+ FROM Payment as P
+        INNER JOIN PaymentType AS PT 
+                ON PT.PaymentTypeID=P.PaymentTypeID
+ GROUP BY PT.PaymentTypeDescription
 
- 
 --7. Which clubs have 3 or more students in them? Display the Club Names.
- -- TODO: Student Answer Here... 
+ -- TODO: Student Answer Here...
+ 
+ SELECT A.ClubId as 'Club',C.ClubName
+ from Activity AS A
+        INNER JOIN Club as C 
+                ON C.ClubId=A.ClubId
+GROUP BY A.ClubId,C.ClubName
+HAVING COUNT(A.ClubId) >=3
+
