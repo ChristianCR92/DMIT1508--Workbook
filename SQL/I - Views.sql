@@ -2,6 +2,10 @@
 USE [A01-School]
 GO
 
+
+
+-- A "View" is a virtual table based on the result-set of an SQL statement.
+
 --1.  Create a view of staff full names called StaffList.
 IF OBJECT_ID('StaffList', 'V') IS NOT NULL
     DROP VIEW StaffList

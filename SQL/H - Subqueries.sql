@@ -13,10 +13,11 @@ WHERE  PaymentTypeID = -- Using the = means that the RH side must be a single va
     (SELECT PaymentTypeID
      FROM   PaymentType
      WHERE  PaymentTypeDescription = 'cash')
+
 -- Here is the Inner Join version of the above
 SELECT PaymentDate, Amount
 FROM   Payment P
-    INNER JOIN PaymentType PT
+    INNER JOIN PaymentType AS PT
             ON PT.PaymentTypeID = P.PaymentTypeID
 WHERE  PaymentTypeDescription = 'cash'
 
@@ -24,7 +25,18 @@ WHERE  PaymentTypeDescription = 'cash'
 --2. Select The Student ID's of all the students that are in the 'Association of Computing Machinery' club
 -- TODO: Student Answer Here
 
+SELECT StudentID
+FROM Activity 
+WHERE ClubId =(SELECT ClubId FROM  Club
+                WHERE  ClubName='Association of Computing Machinery')
+
 -- 2.b. Select the names of all the students in the 'Association of Computing Machinery' club. Use a subquery for your answer. When you make your answer, ensure the outmost query only uses the Student table in its FROM clause.
+SELECT S.FirstName + ' '+ S.LastName AS 'Student Name'
+FROM Student as S
+WHERE StudentID IN ( SELECT StudentID FROM Activity
+                    WHERE ClubId=(SELECT ClubID FROM Club
+                    WHERE ClubName=
+                    'Association of Computing Machinery'))
 
 --3. Select All the staff full names for staff that have taught a course.
 SELECT FirstName + ' ' + LastName AS 'Staff'
@@ -41,7 +53,13 @@ FROM Staff
 
 --4. Select All the staff full names that taught DMIT172.
 -- TODO: Student Answer Here
+SELECT S.FirstName + ' '+S.LastName AS 'Staff Name'  
+FROM Staff AS S
+WHERE StaffID IN
+ (SELECT DISTINCT StaffID FROM Registration WHERE CourseId = 'DMIT172')
 
+
+--4.b Who has taught DMIT101
 
 --5. Select All the staff full names of staff that have never taught a course
 SELECT FirstName + ' ' + LastName AS 'Staff'
@@ -111,8 +129,23 @@ WHERE City = 'Edm'
 -- 9. What is the avg mark for each of the students from Edm? Display their StudentID and avg(mark)
 -- TODO: Student Answer Here...
 
+SELECT AVG(Mark) AS 'Average',StudentID
+FROM Registration
+WHERE StudentID IN (SELECT StudentID FROM Student WHERE City = 'Edm')
+GROUP BY StudentID
+
 -- 10. Which student(s) have the highest average mark? Hint - This can only be done by a subquery.
 -- TODO: Student Answer Here...
+--DOUBLE READ Subqueries content
+SELECT StudentID
+FROM Registration
+GROUP BY StudentID
+HAVING AVG(Mark) >= ALL -- A number can't be " GREATER THAN or EQUAL TO' a NULL value
+        (SELECT AVG(Mark) AS 'Highest Average mark'
+        FROM Registration
+        WHERE Mark IS NOT NULL -- Ah, tricky!
+        GROUP BY StudentID)
+
 
 -- 11. Which course(s) allow the largest classes? Show the course id, name, and max class size.
 -- TODO: Student Answer Here...
