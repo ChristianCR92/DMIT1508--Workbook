@@ -10,7 +10,7 @@ FROM    Position P -- Start with the Position table, because I want ALL position
 --2. Select the Position Description and the count of how many staff are in those positions. Return the count for ALL positions.
 --HINT: Count can use either count(*) which means the entire "row", or "all the columns".
 --      Which gives the correct result in this question?
-SELECT  PositionDescription,
+SELECT  P.PositionDescription,
         COUNT(StaffID) AS 'Number of Staff'
 FROM    Position P
     LEFT OUTER JOIN Staff S ON P.PositionID = S.PositionID
@@ -41,21 +41,68 @@ FROM    Student S
 GROUP BY FirstName, LastName
 --5. How many students are in each club? Display club name and count.
 -- TODO: Student Answer Here...
+SELECT C.ClubName,COUNT (A.ClubId) AS 'Club members'
+from Activity AS A
+    LEFT OUTER JOIN Club AS C 
+            ON C.ClubId=A.ClubId
+GROUP BY C.ClubName,A.ClubId
 
 --6. How many times has each course been offered? Display the course ID and course name along with the number of times it has been offered.
 -- TODO: Student Answer Here...
+--DOUBLE CHECK THIS ONE
 
+SELECT C.CourseId,C.CourseName,
+Count(R.CourseId) AS 'Times offered'
+FROM Course AS C
+LEFT OUTER JOIN Registration AS R 
+        ON C.CourseId=R.CourseId
+GROUP BY C.CourseId,C.CourseName,R.CourseId
 --7. How many courses have each of the staff taught? Display the full name and the count.
 -- TODO: Student Answer Here...
+SELECT FirstName + ' ' + LastName AS 'Staff full name',
+COUNT(R.CourseId) AS 'Courses taught'
+from Staff AS S
+    LEFT OUTER JOIN Registration AS R 
+                   ON S.StaffID=R.StaffID
+GROUP BY  FirstName,LastName
 
 --8. How many second-year courses have the staff taught? Include all the staff and their job position.
 --   A second-year course is one where the number portion of the course id starts with a '2'.
 -- TODO: Student Answer Here...
+Select P.PositionDescription,
+FirstName+ ' '+ LastName AS 'Staff full name',
+Count(DISTINCT R.CourseId) AS '2nd year courses taught'
+FROM Staff AS S
+        LEFT OUTER JOIN Registration AS R 
+                        ON S.StaffID = R.StaffID
+                        LEFT OUTER JOIN Course AS C
+                        ON R.CourseId=C.CourseId
+                        LEFT OUTER JOIN Position AS P
+                        ON P.PositionID=S.PositionID
+WHERE C.CourseId LIKE '____2%'
+OR R.CourseId IS NULL
+GROUP BY P.PositionDescription,FirstName,LastName
+
+-- PRACTICE THE OTHER WAY OF SHOWING RESULTS INCLUDING THE MISSING "Assistant Dean"
+
 
 --9. What is the average payment amount made by each student? Include all the students,
 --   and display the students' full names.
 -- TODO: Student Answer Here...
 
+SELECT S.FirstName + ' ' + S.LastName AS 'Student name',
+AVG(P.Amount) AS 'Average Payment Amount'
+FROM Student as S
+            LEFT OUTER JOIN Payment as P
+                ON P.StudentID=S.StudentID
+GROUP BY S.FirstName,S.LastName
+--Study this one as well 
+
 --10. Display the names of all students who have not made a payment.
 -- TODO: Student Answer Here...
-
+SELECT S.FirstName + ' ' + S.LastName AS ' Student Name'
+FROM Student AS S
+        LEFT OUTER JOIN Payment as P
+                ON S.StudentID=P.StudentID
+WHERE (P.Amount IS NULL)
+GROUP BY S.FirstName,S.LastName

@@ -48,6 +48,9 @@ FROM    Position AS P
 WHERE   CourseId LIKE '____2%' -- An underscore means a single character
    OR   CourseId IS NULL -- Now I will get staff that haven't taught a course
 GROUP BY PositionDescription, FirstName, LastName
+
+
+
 --   Another way of interpreting the question is to think of the number of "kinds" of courses the staff has taught
 SELECT  PositionDescription,
         FirstName + ' ' + LastName AS 'StaffName',
