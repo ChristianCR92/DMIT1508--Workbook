@@ -79,11 +79,15 @@ VALUES ('START', 'Small Tech And Research Teams'),
 -- TODO: Student Answer Here....
 
 INSERT INTO Student(FirstName,LastName,Gender,StreetAddress,City,Province,PostalCode,Birthdate,BalanceOwing)
-VALUES('Mildred','Gonzales','F','8494 Hogan St','Edmonton','AB','T5G 2G2','2000-12-01 00:00:00','0.00'),
-('Chad','Carroll','M','8420 Hogan St','Calgary','AB','T2D 4R4','1999-01-01 00:00:00','0.00'),
-('Jeff','Robinson','M','8079 Dance Hill','Lethbridge','AB','T1Q 9Z9','1990-02-02 00:00:00','0.00')
+VALUES('Mildred','Gonzales','F','8494 Hogan St','Edmonton','AB','T5G2G2','2000-12-01 00:00:00',0.00),
+('Chad','Carroll','M','8420 Hogan St','Calgary','AB','T2D4R4','1999-01-01 00:00:00',0.00),
+('Jeff','Robinson','M','8079 Dance Hill','Lethbridge','AB','T1Q9Z9','1990-02-02 00:00:00',0.00)
+
 sp_help student
 SELECT * from Student
 -- 5. Enroll each of the students you've added into the DMIT777 course.
 --    Use 'Dan Gilleland' as the instructor. At this point, their marks should be NULL.
 -- TODO: Student Answer Here....
+INSERT INTO Registration(StudentID,CourseId,Semester,Mark,WithdrawYN,StaffID)
+VALUES('','DMIT777','','','')
+Select * from Registration

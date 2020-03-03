@@ -1,6 +1,7 @@
 -- Delete Examples
 USE [A01-School]
-GO -- Execute the code up to this point as a single batch
+GO 
+-- Execute the code up to this point as a single batch
 
 -- Delete examples
 -- 1. A scandal has rocked the CSS club. The president has run off with all the
