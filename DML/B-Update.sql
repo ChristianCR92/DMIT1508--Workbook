@@ -73,6 +73,9 @@ GO
 */
 --6.  Using the StudentGrades view, change the coursename for the capstone course to be 'basket weaving 101'.
 -- TODO: Student Answer Here...
+UPDATE StudentGrades
+SET CourseName='basket weaving 101'
+WHERE CourseName='Capstone Project'
 
 --7.  Using the StudentGrades view, update the  mark for studentID 199899200 in course dmit152 to be 90.
 -- TODO: Student Answer Here...
