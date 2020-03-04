@@ -7,9 +7,9 @@ GO
 --1. Select the Payment dates and payment amount for all payments that were Cash
 SELECT PaymentDate, Amount
 FROM   Payment
-WHERE  PaymentTypeID = -- Using the = means that the RH side must be a single value
-     -- Assuming that every PaymentTypeDescription will be UNIQUE,
-     -- the following subquery will return a single column and a single row
+WHERE  PaymentTypeID =                                               -- Using the = means that the RH side must be a single value
+                                                                     -- Assuming that every PaymentTypeDescription will be UNIQUE,
+                                                                     -- the following subquery will return a single column and a single row
     (SELECT PaymentTypeID
      FROM   PaymentType
      WHERE  PaymentTypeDescription = 'cash')
@@ -37,6 +37,19 @@ WHERE StudentID IN ( SELECT StudentID FROM Activity
                     WHERE ClubId=(SELECT ClubID FROM Club
                     WHERE ClubName=
                     'Association of Computing Machinery'))
+
+
+--JOIN 
+            SELECT FirstName, + ' ' + LastName AS 'Student Name'
+            from Student AS S
+                INNER JOIN Activity AS A ON S.StudentID=A.StudentID
+                        INNER JOIN Club as C ON A.ClubId=C.ClubId
+                        WHERE ClubName='Association of Computing Machinery'
+
+
+
+
+
 
 --3. Select All the staff full names for staff that have taught a course.
 SELECT FirstName + ' ' + LastName AS 'Staff'
