@@ -76,7 +76,6 @@ SELECT  DATENAME(mm, Birthdate) AS 'Month Name',
         COUNT(1) AS 'Number of Students'
 FROM    Student
 GROUP BY DATENAME(mm, Birthdate)
-
 -- 4. Select the Names of all the students born in December.
 SELECT  FirstName, LastName
 FROM    Student

@@ -20,7 +20,7 @@ FROM    Student -- Start the FROM statement by identifying one of the tables you
         ON Student.StudentID = Registration.StudentID
 
 --1.a. Select Student full names, the course ID and the course name that the students are registered in.
-SELECT  FirstName + ' ' + LastName AS 'FullName',
+SELECT  FirstName + ' ' + LastName AS 'Full Name',
         C.CourseId,
         CourseName
 FROM    Student AS S
