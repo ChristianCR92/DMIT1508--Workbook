@@ -4,7 +4,7 @@ GO
 
 
 -- A UNION allows us to combine the result set of two or more individual SELECT statements.
--- For the UNION to wor, however, the number, order and data type of the columns in the SELECT statements must match.
+-- For the UNION to work, however, the number, order and data type of the columns in the SELECT statements must match.
 --UNIONS are rarely used, but are helpful for certain situations.
 
 --1.	Write a script that will produce the 'It Happened in October' display.
