@@ -169,11 +169,28 @@ HAVING MAX(MaxStudents) >= ALL
                   (SELECT MAX(MaxStudents) AS 'Largest class'
                    FROM Course)
 
+
+                   
+        --- THINK ABOUT THE SUBQUERY FIRST , THEN APPLY THE SUBQUERY TO THE LARGER QUERY, THEN APPLY THE AGGREGATION 
+
+
+
 -- 12. Which course(s) are the most affordable? Show the course name and cost.
 -- TODO: Student Answer Here...
+
+
+SELECT CourseName,CourseCost
+FROM Course
+GROUP BY CourseName,CourseCost
+    HAVING MIN(CourseCost)<= ALL
+                    (SELECT MIN (CourseCost) AS ' Most affordable course(s)'
+                    FROM Course)
+
 
 -- 13. Which staff have taught the largest classes? (Be sure to group registrations by course and semester.)
 -- TODO: Student Answer Here...
 
+
 -- 14. Which students are most active in the clubs?
+
 -- TODO: Student Answer Here...
