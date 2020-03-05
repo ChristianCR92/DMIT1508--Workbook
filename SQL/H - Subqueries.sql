@@ -162,6 +162,12 @@ HAVING AVG(Mark) >= ALL -- A number can't be " GREATER THAN or EQUAL TO' a NULL 
 
 -- 11. Which course(s) allow the largest classes? Show the course id, name, and max class size.
 -- TODO: Student Answer Here...
+SELECT CourseId,CourseName,MaxStudents
+FROM Course
+GROUP BY CourseId,CourseName,MaxStudents
+HAVING MAX(MaxStudents) >= ALL
+                  (SELECT MAX(MaxStudents) AS 'Largest class'
+                   FROM Course)
 
 -- 12. Which course(s) are the most affordable? Show the course name and cost.
 -- TODO: Student Answer Here...
