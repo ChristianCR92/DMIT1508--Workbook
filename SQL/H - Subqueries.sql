@@ -162,14 +162,17 @@ HAVING AVG(Mark) >= ALL -- A number can't be " GREATER THAN or EQUAL TO' a NULL 
 
 -- 11. Which course(s) allow the largest classes? Show the course id, name, and max class size.
 -- TODO: Student Answer Here...
-SELECT CourseId,CourseName,MaxStudents
+SELECT CourseId,CourseName,MaxStudents AS 'Largest class'
 FROM Course
 GROUP BY CourseId,CourseName,MaxStudents
 HAVING MAX(MaxStudents) >= ALL
-                  (SELECT MAX(MaxStudents) AS 'Largest class'
+                  (SELECT MAX(MaxStudents) 
                    FROM Course)
 
-
+                   -- DAN CODING--
+SELECT  CourseId, CourseName, MaxStudents
+FROM    Course
+WHERE   MaxStudents >= ALL (SELECT MaxStudents FROM Course)
                    
         --- THINK ABOUT THE SUBQUERY FIRST , THEN APPLY THE SUBQUERY TO THE LARGER QUERY, THEN APPLY THE AGGREGATION 
 
@@ -179,18 +182,56 @@ HAVING MAX(MaxStudents) >= ALL
 -- TODO: Student Answer Here...
 
 
-SELECT CourseName,CourseCost
+SELECT CourseName,CourseCost AS 'Most affordable course(s)'
 FROM Course
 GROUP BY CourseName,CourseCost
     HAVING MIN(CourseCost)<= ALL
-                    (SELECT MIN (CourseCost) AS ' Most affordable course(s)'
+                    (SELECT MIN (CourseCost) 
                     FROM Course)
-
+-- DAN CODING--
+SELECT  CourseName, CourseCost
+FROM    Course
+WHERE   CourseCost <= ALL (SELECT CourseCost FROM Course)
 
 -- 13. Which staff have taught the largest classes? (Be sure to group registrations by course and semester.)
 -- TODO: Student Answer Here...
+       /* SELECT StaffID,CourseId,Semester 
+        FROM Registration
+         WHERE COUNT(MaxStudents)=
+                            ( SELECT COUNT(MaxStudents)
+                                from Course 
+                                GROUP BY MaxStudents)
+                                */
+SELECT DISTINCT S.FirstName + ' '+ S.LastName AS 'Staff Name',CourseId,COUNT(CourseId)
+FROM Staff AS S
+        INNER JOIN Registration AS R ON S.StaffID=R.StaffID
+        GROUP BY S.FirstName+ ' '+ S.LastName,CourseId
+HAVING COUNT(CourseId) >= ALL (SELECT COUNT(CourseId)
+                                FROM Registration
+                                Group by StaffID,CourseId)
+
+-- DAN CODING--
+
+SELECT  DISTINCT FirstName + ' ' + LastName AS 'StaffName'
+        , CourseId
+        , COUNT(CourseId)
+FROM    Staff AS S
+    INNER JOIN Registration AS R
+        ON S.StaffID = R.StaffID
+GROUP BY FirstName + ' ' + LastName, CourseId
+HAVING  COUNT(CourseId) >= ALL (SELECT COUNT(CourseId)
+                                FROM   Registration
+                                GROUP BY StaffID, CourseId)
 
 
 -- 14. Which students are most active in the clubs?
-
 -- TODO: Student Answer Here...
+
+SELECT FirstName+ ' ' + LastName AS 'Student Name'
+from Student AS S
+    INNER JOIN Activity AS A 
+    ON S.StudentID=A.StudentID
+GROUP BY FirstName +' '+ LastName
+HAVING COUNT(ClubId) >= ALL (SELECT COUNT(ClubId)
+                                    FROM Activity
+                                    GROUP BY StudentID)
