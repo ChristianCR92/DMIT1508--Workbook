@@ -85,8 +85,8 @@ VALUES('Mildred','Gonzales','F','8494 Hogan St','Edmonton','AB','T5G2G2','2000-1
 ('Chad','Carroll','M','8420 Hogan St','Calgary','AB','T2D4R4','1999-01-01 00:00:00',0.00),
 ('Jeff','Robinson','M','8079 Dance Hill','Lethbridge','AB','T1Q9Z9','1990-02-02 00:00:00',0.00)
 
-SELECT * from Student 
-ORDER BY StudentID DESC
+--SELECT * from Student 
+--ORDER BY StudentID DESC
 -- 5. Enroll each of the students you've added into the DMIT777 course.
 --    Use 'Dan Gilleland' as the instructor. At this point, their marks should be NULL.
 -- TODO: Student Answer Here....

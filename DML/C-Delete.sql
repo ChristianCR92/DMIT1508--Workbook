@@ -14,7 +14,6 @@ SELECT * from Activity order by ClubId
 -- 2. The probe into the CSS club scandal is complete. Remove the club from the Club table.
 DELETE FROM Club
 WHERE  ClubID = 'CSS'
-
 SELECT  ClubId,ClubName
 from Club
 
@@ -28,7 +27,7 @@ WHERE  StudentID IN (SELECT StudentID
 -- 4. The school is resetting all inactive clubs. Remove those clubs without members (use a subquery).
 -- TODO: Student Answer Here...
 --STUDY DELETE Procedure - -ASK ABOUT THIS ONE 
-DELETE FROM Activity
+DELETE FROM Club
 WHERE ClubId != ALL (SELECT ClubId 
                     FROM Activity)
 

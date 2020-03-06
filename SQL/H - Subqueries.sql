@@ -162,6 +162,10 @@ HAVING AVG(Mark) >= ALL -- A number can't be " GREATER THAN or EQUAL TO' a NULL 
 
 -- 11. Which course(s) allow the largest classes? Show the course id, name, and max class size.
 -- TODO: Student Answer Here...
+SELECT CourseId
+FROM Course
+group by courseid
+
 SELECT CourseId,CourseName,MaxStudents AS 'Largest class'
 FROM Course
 GROUP BY CourseId,CourseName,MaxStudents
@@ -222,6 +226,7 @@ GROUP BY FirstName + ' ' + LastName, CourseId
 HAVING  COUNT(CourseId) >= ALL (SELECT COUNT(CourseId)
                                 FROM   Registration
                                 GROUP BY StaffID, CourseId)
+-- use having when filtering by an aggregate function, anything else, use where
 
 
 -- 14. Which students are most active in the clubs?
