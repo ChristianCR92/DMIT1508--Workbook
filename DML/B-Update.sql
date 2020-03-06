@@ -48,10 +48,24 @@ WHERE  City = 'Edm'
 -- 5. For each student that does not have a mark in the Registration table,
 --    create an update statement that gives each student a different mark.
 -- TODO: Student Answer Here....
+UPDATE Registration
+SET Mark=  77
+WHERE MARK IS NULL
+
+SELECT S.StudentID,FirstName,LastName,Mark,CourseId
+from Registration  AS R
+        INNER JOIN Student AS S ON R.StudentID=S.StudentID
+Where S.StudentID=198933540
+
 
 -- 6. Choose a student from the previous question and withdraw them from all
 --    their courses.
 -- TODO: Student Answer Here....
+UPDATE Registration
+SET WithdrawYN='Y'
+WHERE StudentID=198933540
+
+SELECT * from Registration
 
 /* The following statements expect the presence of a view called StudentGrades.
 IF OBJECT_ID('StudentGrades', 'V') IS NOT NULL
@@ -79,6 +93,13 @@ WHERE CourseName='Capstone Project'
 
 --7.  Using the StudentGrades view, update the  mark for studentID 199899200 in course dmit152 to be 90.
 -- TODO: Student Answer Here...
+--WHAT REALLY MEANS BY DELETING IT?!
+UPDATE StudentGrades
+SET Mark=90
+WHERE StudentID=199899200 AND CourseId='DMIT152'
 
 --8.  Using the StudentGrades view, delete the same record from the previous question.
 -- TODO: Student Answer Here...
+UPDATE StudentGrades
+SET Mark=89
+WHERE StudentID=199899200 AND CourseId='DMIT152'
