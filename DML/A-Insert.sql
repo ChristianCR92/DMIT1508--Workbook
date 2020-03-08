@@ -34,7 +34,7 @@ GO -- Execute the code up to this point as a single batch
 -- 1. Let's add a new course called "Expert SQL". It will be a 90 hour course with a cost of $450.00
 INSERT INTO Course(CourseId, CourseName, CourseHours, CourseCost)
 VALUES ('DMIT777', 'Expert SQL', 90, 450.00)
-SELECT * from Course
+--SELECT * from Course
 
 -- 2. Let's add a new staff member, someone who's really good at SQL
 -- SELECT * FROM STAFF
