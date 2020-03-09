@@ -52,11 +52,6 @@ UPDATE Registration
 SET Mark=  77
 WHERE MARK IS NULL
 
-SELECT S.StudentID,FirstName,LastName,Mark,CourseId
-from Registration  AS R
-        INNER JOIN Student AS S ON R.StudentID=S.StudentID
-Where S.StudentID=198933540
-
 
 -- 6. Choose a student from the previous question and withdraw them from all
 --    their courses.

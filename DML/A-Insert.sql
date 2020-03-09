@@ -90,8 +90,13 @@ VALUES('Mildred','Gonzales','F','8494 Hogan St','Edmonton','AB','T5G2G2','2000-1
 -- 5. Enroll each of the students you've added into the DMIT777 course.
 --    Use 'Dan Gilleland' as the instructor. At this point, their marks should be NULL.
 -- TODO: Student Answer Here....
+
+--CHECK THIS ONE, Getting error about FK
 INSERT INTO Registration(StudentID,CourseId,Semester,Mark,WithdrawYN,StaffID)
-VALUES(200978401,'DMIT777','2020J',NULL,'N', (SELECT StaffID 
+VALUES((SELECT StudentID
+                FROM Student
+                WHERE FirstName='Mildred' AND LastName='Gonzales'),
+                'DMIT777','2020J',NULL,'N', (SELECT StaffID 
                                                 FROM Staff
                                                  WHERE FirstName='Dan' AND LastName='Gilleland'))
 

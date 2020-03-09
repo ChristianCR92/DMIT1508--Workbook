@@ -26,7 +26,6 @@ WHERE  StudentID IN (SELECT StudentID
 
 -- 4. The school is resetting all inactive clubs. Remove those clubs without members (use a subquery).
 -- TODO: Student Answer Here...
---STUDY DELETE Procedure - -ASK ABOUT THIS ONE 
 DELETE FROM Club
 WHERE ClubId != ALL (SELECT ClubId 
                     FROM Activity)
