@@ -49,7 +49,7 @@ AS
     FROM   Course C
         INNER JOIN Registration R ON C.CourseId = R.CourseId
     GROUP BY C.CourseName
-    HAVING AVG(R.Mark) > 80
+  HAVING AVG(R.Mark) > 80
 RETURN
 GO
 -- To actually execute (run) the stored procedure, you call EXEC
