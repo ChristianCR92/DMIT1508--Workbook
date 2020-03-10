@@ -1,6 +1,17 @@
 -- Stored Procedures (Sprocs)
 -- Validating Parameter Values
 
+-- We can validate parameter values using IF / ELSE statements. An IF/ELSE statement is called a "flow-control" statement because it controls whether or not another statement
+--(or statement block) will execute.
+-- The grammar of the IF/ELSE statement is as follows:
+-- IF( Conditional_Expression) 
+--      Statement or statement-block -- TRUE side
+--ELSE 
+-- Statement or statement-block -- FALSE side
+-- where the Conditional_expression is some kind of expression that will result in a 
+--value of TRUE or FALSE.
+
+
 USE [A01-School]
 GO
 
@@ -35,7 +46,15 @@ AS
 RETURN
 GO
 
-
+-- Demo/Test my stored procedure
+EXEC AddClub 'CLUB','Central Library of Unused Books'
+ 
+ /* Unable to enter null values since the tables have constrains*/
+ -- Imagine that the sproc is called with !bad! data
+EXEC AddClub null,'Gotcha'
+GO
+EXEC AddClub 'OOPS',null
+GO
 -- 1.b. Modify the AddClub procedure to ensure that the club name and id are actually supplied. Use the RAISERROR() function to report that this data is required.
 ALTER PROCEDURE AddClub
     -- Parameters here
@@ -43,16 +62,25 @@ ALTER PROCEDURE AddClub
     @ClubName   varchar(50)
 AS
     -- Body of procedure here
+    -- I validate by finding out if the data is poor. If so, then I report the problem/
     IF @ClubId IS NULL OR @ClubName IS NULL
     BEGIN
-        RAISERROR('Club ID and Name are required', 16, 1)
+        RAISERROR('Club ID and Name are required', 16, 1) 
+        -- The 16 is the error number(we are basically constrained to a range of error numbers)
+        -- The 1 is the severity of the error
+        -- We can always use the 16,1 
     END
-    ELSE
+    ELSE -- Otherwise, I proceed to process the data 
     BEGIN
         INSERT INTO Club(ClubId, ClubName)
         VALUES (@ClubId, @ClubName)
     END
 RETURN
+GO
+-- Imagine that the sproc is called with !bad! data
+EXEC AddClub null,'Gotcha'
+GO
+EXEC AddClub 'OOPS',null
 GO
 
 -- 2. Make a stored procedure that will find a club based on the first two or more characters of the club's ID. Call the procedure "FindStudentClubs"
@@ -155,6 +183,7 @@ AS
     IF @StudentId IS NULL OR @FirstName IS NULL OR @LastName IS NULL
         RAISERROR('All parameters are required.', 16, 1)
     ELSE IF NOT EXISTS (SELECT StudentID FROM Student WHERE StudentID = @StudentId)
+    --The EXISTS  function will return true if there are 1 or more rows, otherwise it will return false
         RAISERROR('That student id does not exist', 16, 1)
     ELSE
         UPDATE  Student
@@ -168,15 +197,94 @@ GO
 
 -- 5. Create a stored procedure that will remove a student from a club. Call it RemoveFromClub.
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'RemoveFromClub')
+    DROP PROCEDURE RemoveFromClub
+GO
+CREATE PROCEDURE RemoveFromClub
+    @StudentID int
+ AS
+    IF @StudentID IS NULL
+        BEGIN
+        RAISERROR ('ALL parameters are required.',16,1)
+        END
+    ELSE 
+        BEGIN
+        Delete from Activity WHERE StudentID=@StudentID
+        END
+    RETURN
+GO
+
 
 -- Query-based Stored Procedures
 -- 6. Create a stored procedure that will display all the staff and their position in the school.
 --    Show the full name of the staff member and the description of their position.
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'AllStaff')
+    DROP PROCEDURE AllStaff
+GO
+CREATE PROCEDURE AllStaff
+
+AS  
+    BEGIN
+    SELECT FirstName + ' '+LastName AS 'Staff Name', P.PositionDescription
+    FROM Staff AS S
+    INNER JOIN Position AS P ON S.PositionID=P.PositionID
+    END
+   RETURN
+  GO
+
+EXEC AllStaff
+GO
+
 
 -- 7. Display all the final course marks for a given student. Include the name and number of the course
 --    along with the student's mark.
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'FinalCourseMarks')
+    DROP PROCEDURE FinalCourseMarks
+GO
+CREATE PROCEDURE FinalCourseMarks
+@StudentID int
+AS
+    IF @StudentID IS NULL
+      BEGIN
+    RAISERROR('All parameters are required',16,1)
+    END
+    ELSE
+    BEGIN
+    SELECT R.StudentID,C.CourseName,C.CourseId,R.Mark
+    FROM Course AS C
+        INNER JOIN Registration AS R ON C.CourseId=R.CourseId
+        WHERE StudentID=@StudentID
+    END
+    RETURN 
+    GO
+    
+EXEC FinalCourseMarks 199912010
+GO
 
 -- 8. Display the students that are enrolled in a given course on a given semester.
 --    Display the course name and the student's full name and mark.
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'StudentsEnrolledInCourse')
+    DROP PROCEDURE StudentsEnrolledInCourse
+GO
+CREATE PROCEDURE StudentsEnrolledInCourse
+@CourseId char(7),
+@Semester char(5)
+AS
+  IF @CourseId IS NULL OR @Semester IS NULL
+    BEGIN 
+     RAISERROR('All parameters are required',16,1)
+  END
+    ELSE
+    BEGIN
+    SELECT S.FirstName + ' ' + S.LastName AS 'Student Name',R.Mark,C.CourseName
+    FROM Student AS S
+            INNER JOIN Registration AS R ON S.StudentID=R.StudentID
+                INNER JOIN Course AS C ON R.CourseId=C.CourseId
+                WHERE C.CourseId=@CourseId AND Semester=@Semester
+        END
+        RETURN
+        GO
 
+EXEC StudentsEnrolledInCourse 'DMIT101','2000S'
+GO
 -- 9. The school is running out of money! Find out who still owes money for the courses they are enrolled in.
