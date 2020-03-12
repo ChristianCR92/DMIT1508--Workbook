@@ -48,7 +48,7 @@ GO
 
 -- Demo/Test my stored procedure
 EXEC AddClub 'CLUB','Central Library of Unused Books'
- 
+
  /* Unable to enter null values since the tables have constrains*/
  -- Imagine that the sproc is called with !bad! data
 EXEC AddClub null,'Gotcha'
@@ -288,3 +288,31 @@ AS
 EXEC StudentsEnrolledInCourse 'DMIT101','2000S'
 GO
 -- 9. The school is running out of money! Find out who still owes money for the courses they are enrolled in.
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'WhoOwesMoney')
+    DROP PROCEDURE WhoOwesMoney
+GO
+CREATE PROCEDURE WhoOwesMoney
+@StudentID int
+AS
+ IF @StudentID IS NULL
+BEGIN
+        RAISERROR ('All parameters are required',16,1)
+END
+ELSE
+BEGIN
+SELECT S.FirstName+ ' '+S.LastName AS 'Student Owing money'
+FROM Student AS S
+WHERE BalanceOwing > 0
+END
+RETURN 
+GO
+
+EXEC WhoOwesMoney 200312345
+GO
+SELECT * from Student
+/*
+UPDATE Student 
+SET BalanceOwing=1
+WHERE StudentID=200312345
+*/

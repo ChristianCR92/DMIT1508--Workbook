@@ -73,6 +73,10 @@ WHERE StaffID IN
 
 
 --4.b Who has taught DMIT101
+SELECT FirstName+ ' '+LastName AS 'Staff'
+FROM Staff
+WHERE StaffID IN 
+(SELECT DISTINCT StaffID FROM Registration WHERE CourseId='DMIT101')
 
 --5. Select All the staff full names of staff that have never taught a course
 SELECT FirstName + ' ' + LastName AS 'Staff'
@@ -199,13 +203,7 @@ WHERE   CourseCost <= ALL (SELECT CourseCost FROM Course)
 
 -- 13. Which staff have taught the largest classes? (Be sure to group registrations by course and semester.)
 -- TODO: Student Answer Here...
-       /* SELECT StaffID,CourseId,Semester 
-        FROM Registration
-         WHERE COUNT(MaxStudents)=
-                            ( SELECT COUNT(MaxStudents)
-                                from Course 
-                                GROUP BY MaxStudents)
-                                */
+  
 SELECT DISTINCT S.FirstName + ' '+ S.LastName AS 'Staff Name',CourseId,COUNT(CourseId)
 FROM Staff AS S
         INNER JOIN Registration AS R ON S.StaffID=R.StaffID
@@ -226,7 +224,8 @@ GROUP BY FirstName + ' ' + LastName, CourseId
 HAVING  COUNT(CourseId) >= ALL (SELECT COUNT(CourseId)
                                 FROM   Registration
                                 GROUP BY StaffID, CourseId)
--- use having when filtering by an aggregate function, anything else, use where
+
+-- use HAVING when filtering by an aggregate function, anything else, use WHERE
 
 
 -- 14. Which students are most active in the clubs?
@@ -235,7 +234,7 @@ HAVING  COUNT(CourseId) >= ALL (SELECT COUNT(CourseId)
 SELECT FirstName+ ' ' + LastName AS 'Student Name'
 from Student AS S
     INNER JOIN Activity AS A 
-    ON S.StudentID=A.StudentID
+    ON S.StudentID=A.StudentID          
 GROUP BY FirstName +' '+ LastName
 HAVING COUNT(ClubId) >= ALL (SELECT COUNT(ClubId)
                                     FROM Activity

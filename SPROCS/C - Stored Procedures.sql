@@ -15,6 +15,29 @@ WHERE   Mark BETWEEN 70 AND 80 -- BETWEEN is inclusive
 --      Call the stored procedure ListStudentMarksByRange
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'ListStudentMarksByRange')
+    DROP PROCEDURE ListStudentMarksByRange
+GO
+CREATE PROCEDURE ListStudentMarksByRange
+@StudentID int, 
+@CourseId char(7)
+AS
+        IF @StudentID IS NULL OR @CourseId IS NULL  
+      BEGIN
+             RAISERROR('All parameters are required',16,1)
+   END
+    ELSE
+    BEGIN
+        SELECT R.StudentID,R.CourseId,R.Mark
+            FROM Registration AS R
+            WHERE StudentID=@StudentID AND CourseId=@CourseId AND Mark BETWEEN 70 AND 80
+            END
+            RETURN
+             GO
+
+EXEC ListStudentMarksByRange 199899200, 'DMIT168'
+GO
+
 /* ----------------------------------------------------- */
 
 -- 2.   Selects the Staff full names and the Course ID's they teach.
@@ -27,6 +50,21 @@ FROM    Staff S
 ORDER BY 'Staff Full Name', CourseId
 --      Place this in a stored procedure called CourseInstructors.
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'CourseInstructors')
+    DROP PROCEDURE CourseInstructors
+GO
+CREATE PROCEDURE CourseInstructors
+AS
+        BEGIN 
+        SELECT DISTINCT S.FirstName, S.LastName AS 'Staff Full Name',R.CourseId
+            FROM Staff as S
+                    INNER JOIN Registration AS R ON S.StaffID=R.StaffID
+                        ORDER BY 'Staff Full Name',CourseId
+        END
+        RETURN 
+        GO
+
+EXEC CourseInstructors
 
 /* ----------------------------------------------------- */
 
@@ -39,6 +77,27 @@ WHERE   LastName LIKE 'S%'
 --      Do NOT assume that the '%' is part of the value in the parameter variable;
 --      Your solution should concatenate the @PartialName with the wildcard.
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'FindStudentByLastName')
+    DROP PROCEDURE FindStudentByLastName
+GO
+CREATE PROCEDURE FindStudentByLastName
+@PartialName char(1)
+AS
+        IF @PartialName IS NULL
+        BEGIN
+        RAISERROR('All parameters required',16,1)
+        END
+        ELSE
+        BEGIN
+        SELECT FirstName,LastName
+        FROM Student
+        WHERE LastName LIKE 'S%'
+        END
+   RETURN
+   GO
+
+   EXEC FindStudentByLastName S
+   GO
 
 /* ----------------------------------------------------- */
 
@@ -50,6 +109,29 @@ WHERE   CourseName LIKE '%programming%'
 --      The parameter should be called @PartialName.
 --      Do NOT assume that the '%' is part of the value in the parameter variable.
 
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'FindCourse')
+    DROP PROCEDURE FindCourse
+GO
+CREATE PROCEDURE FindCourse
+@PartialName varchar(20)
+AS
+        IF @PartialName IS NULL
+        BEGIN
+        RAISERROR('All parameters required',16,1)
+        END
+        ELSE
+        BEGIN 
+            SELECT CourseId,CourseName
+                FROM Course
+                    WHERE CourseName LIKE '%programming%'
+         END
+        RETURN
+        GO
+
+EXEC FindCourse 'programming'
+GO
+    
 
 /* ----------------------------------------------------- */
 
@@ -64,6 +146,29 @@ HAVING COUNT(PaymentType.PaymentTypeID) >= ALL (SELECT COUNT(PaymentTypeID)
                                                 GROUP BY PaymentTypeID)
 --      Place this in a stored procedure called MostFrequentPaymentTypes.
 
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'MostFrequentPaymentTypes')
+    DROP PROCEDURE MostFrequentPaymentTypes
+GO
+CREATE PROCEDURE MostFrequentPaymentTypes
+AS
+    BEGIN
+    SELECT PaymentTypeDescription
+        FROM Payment
+            INNER JOIN PaymentType ON Payment.PaymentTypeID=PaymentType.PaymentTypeID
+            GROUP BY PaymentType.PaymentTypeID, PaymentTypeDescription
+                HAVING COUNT(PaymentType.PaymentTypeID) >= ALL (SELECT COUNT(PaymentTypeID)
+                                                                    FROM Payment
+                                                                    GROUP  BY PaymentTypeID)
+           END
+           RETURN 
+           GO
+
+EXEC MostFrequentPaymentTypes
+GO
+
+
 /* ----------------------------------------------------- */
 
 -- 6.   Selects the current staff members that are in a particular job position.
@@ -74,6 +179,23 @@ WHERE   DateReleased IS NULL
   AND   PositionDescription = 'Instructor'
 --      Place this in a stored procedure called StaffByPosition
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'StaffByPosition')
+    DROP PROCEDURE StaffByPosition
+GO
+CREATE PROCEDURE StaffByPosition
+AS
+    BEGIN
+        SELECT S.FirstName + ' '+ S.LastName AS 'StaffFullName'
+            FROM Position AS P
+                INNER JOIN Staff AS S ON P.PositionID=S.PositionID
+            WHERE DateReleased IS NULL
+                AND PositionDescription='Instructor'
+        END
+        RETURN
+        GO
+
+EXEC StaffByPosition
+GO
 /* ----------------------------------------------------- */
 
 -- 7.   Selects the staff members that have taught a particular course (e.g.: 'DMIT101').
@@ -86,3 +208,20 @@ WHERE   DateReleased IS NULL
 --      This select should also accommodate inputs with wildcards. (Change = to LIKE)
 --      Place this in a stored procedure called StaffByCourseExperience
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'StaffByCourseExperience')
+    DROP PROCEDURE StaffByCourseExperience
+GO
+CREATE PROCEDURE StaffByCourseExperience
+AS
+    BEGIN
+        SELECT DISTINCT S.FirstName + ' '+S.LastName AS 'StaffFullName', R.CourseId 
+            FROM Registration AS R
+                INNER JOIN Staff AS S On R.StaffID=S.StaffID
+                WHERE DateReleased IS NULL 
+                    AND CourseId= 'DMIT101'
+    END
+    RETURN
+    GO
+   
+EXEC StaffByCourseExperience
+GO
