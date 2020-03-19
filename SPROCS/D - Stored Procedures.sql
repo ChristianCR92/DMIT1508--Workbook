@@ -218,37 +218,6 @@ GO
 EXEC OverActiveMembers NULL
 
 EXEC OverActiveMembers 1
-
-/*
-    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'OverActiveMembers')
-    DROP PROCEDURE OverActiveMembers
-GO
-CREATE PROCEDURE OverActiveMembers
-    @ClubCount        int
-AS
-    IF @ClubCount IS NULL
-        RAISERROR ('Club count invalid', 16, 1)
-    ELSE
-        IF @ClubCount <0
-            RAISERROR ('Invalid input, ClubCount cannot be negative', 16, 1)
-        ELSE
-        BEGIN
-            SELECT  S.firstName + ' ' + S.LastName AS 'Name'
-            FROM    Student S
-                INNER JOIN Activity as A ON S.StudentID =A.StudentID
-            GROUP BY A.StudentID, S.FirstName, S. LastName
-            HAVING    COUNT(A.ClubId)>=@ClubCount
-            
-        END
-RETURN
-GO
-
-EXEC OverActiveMembers NULL
-GO
-EXEC OverActiveMembers 1
-GO
-*/
-
    
 
 -- 5) Create a stored procedure called ListStudentsWithoutClubs that lists the full names of all students who are not active in a club.
@@ -257,20 +226,22 @@ GO
     DROP PROCEDURE ListStudentsWithoutClubs
 GO
 CREATE PROCEDURE ListStudentsWithoutClubs
-      AS
+ AS
         BEGIN 
         SELECT S.FirstName + ' '+ S.LastName AS 'Student Name'
             FROM Student AS S
                 INNER JOIN Activity AS A ON S.StudentID=A.StudentID
                 WHERE A.ClubId IS NULL
-                GROUP BY A.StudentID,S.FirstName,S.LastName     
+                GROUP BY A.StudentID,S.FirstName,S.LastName  
             END
             RETURN 
             GO
 
-
-EXEC ListStudentsWithoutClubs
+EXEC ListStudentsWithoutClubs 
   
+
+  SELECT * from Student
+
 -- 6) Create a stored procedure called LookupStudent that accepts a partial student last name and returns a list of all students whose last name includes the partial last name. Return the student first and last name as well as their ID.
 
 
