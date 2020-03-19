@@ -14,29 +14,22 @@ WHERE   Mark BETWEEN 70 AND 80 -- BETWEEN is inclusive
 --      one for the upper value and one for the lower value.
 --      Call the stored procedure ListStudentMarksByRange
 
-
+-- FIX THIS ONE! -- 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'ListStudentMarksByRange')
     DROP PROCEDURE ListStudentMarksByRange
 GO
 CREATE PROCEDURE ListStudentMarksByRange
-@StudentID int, 
-@CourseId char(7)
+@lower decimal,
+@upper decimal
 AS
-        IF @StudentID IS NULL OR @CourseId IS NULL  
-      BEGIN
-             RAISERROR('All parameters are required',16,1)
-   END
-    ELSE
-    BEGIN
-        SELECT R.StudentID,R.CourseId,R.Mark
-            FROM Registration AS R
-            WHERE StudentID=@StudentID AND CourseId=@CourseId AND Mark BETWEEN 70 AND 80
-            END
+      
+        SELECT StudentID,CourseId,Mark
+            FROM Registration 
+            WHERE Mark BETWEEN 70 AND 80
             RETURN
              GO
 
-EXEC ListStudentMarksByRange 199899200, 'DMIT168'
-GO
+EXEC ListStudentMarksByRange 70, 80
 
 /* ----------------------------------------------------- */
 

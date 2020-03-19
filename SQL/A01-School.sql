@@ -2,7 +2,7 @@
    Table Creation and Load Data Script 
    **************************************** */
 
--- CREATE DATABASE [A01-School]
+--CREATE DATABASE [A01-School]
 GO
 
 USE [A01-School]
