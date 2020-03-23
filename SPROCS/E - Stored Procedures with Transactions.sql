@@ -1,6 +1,16 @@
 --  Stored Procedures (Sprocs)
 -- Demonstrate using Transactions in a Stored Procedure
 
+--WHAT IS A TRANSACTION?
+-- A transaction must fail or succeed as a group
+--A transaction is tipically needed when we do two or more of an Insert/Update/Delete
+ -- How do we start a transaction
+ -- BEGIN TRANSACTION
+ --     The BEGIN TRANSACTION only needs to be stated once
+ -- To make a transaction succeed, we use the statement COMMIT TRANSACTION
+ -- The COMMIT TRANSACTION  only needs to be stated one 
+ -- To make a transaction fail,we use the statement ROLLBACK TRANSACTION
+ -- We will have a ROLLBACK for every INSERT /UPDATE /DELETE statement
 USE [A01-School]
 GO
 
@@ -18,6 +28,11 @@ GO
 
 
 -- 1. Add a stored procedure called TransferCourse that accepts a student ID, semester, and two course IDs: the one to move the student out of and the one to move the student in to.
+-- Withdraw the student from one course UPDATE
+-- Add the student to another course INSERT
+
+
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'TransferCourse')
     DROP PROCEDURE TransferCourse
 GO
@@ -33,6 +48,7 @@ AS
     IF @StudentID IS NULL OR @Semester IS NULL OR @LeaveCourseID IS NULL OR @EnterCourseID IS NULL
     BEGIN
         RAISERROR('All parameters are required (cannot be null)', 16, 1)
+        --We make ask to do our validation 
     END
     ELSE
     BEGIN
@@ -45,7 +61,7 @@ AS
         WHERE  StudentID = @StudentID
           AND  CourseId = @LeaveCourseID
           AND  Semester = @Semester
-          AND  (WithdrawYN = 'N' OR WithdrawYN IS NULL)
+          AND  (WithdrawYN = 'N' OR WithdrawYN IS NULL) -- this could result in 0 rows affected
         --         Check for error/rowcount
         IF @@ERROR > 0 OR @@ROWCOUNT = 0
         BEGIN
@@ -66,7 +82,7 @@ AS
             BEGIN
                 --PRINT('RAISERROR + ROLLBACK')
                 RAISERROR('Unable to transfer student to new course', 16, 1)
-                ROLLBACK TRANSACTION
+                ROLLBACK TRANSACTION -- will undo the UPDATE action from step 1
             END
             ELSE
             BEGIN
@@ -78,7 +94,19 @@ AS
 RETURN
 GO
 
+-- test stored procedure
+-- SELECT * FROM Registration
 
+EXEC TransferCourse 199899200,'2004J','DMIT152','DMIT101'
+
+--Testing with "bad" data
+EXEC TransferCourse 5,'2004J','DMIT152','DMIT101' -- bad student ID
+EXEC TransferCourse 199899200,'2020J','DMIT152','DMIT101' -- bad semester
+EXEC TransferCourse 199899200,'2004J','DMIT101','DMIT999' -- non existing course to enter
+
+
+--Quiz 2: Modifying create   
+--STUDY THIS ONE--
 -- 2. Add a stored procedure called AdjustMarks that takes in a course ID. The procedure should adjust the marks of all students for that course by increasing the mark by 10%. Be sure that nobody gets a mark over 100%.
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'AdjustMarks')
     DROP PROCEDURE AdjustMarks
@@ -132,6 +160,9 @@ AS
 
 RETURN
 GO
+EXEC AdjustMarks 'DMIT172'
+SELECT * FROM Registration
+
 
 -- 3. Create a stored procedure called RegisterStudent that accepts StudentID, CourseID and Semester as parameters. If the number of students in that course and semester are not greater than the Max Students for that course, add a record to the Registration table and add the cost of the course to the students balance. If the registration would cause the course in that semester to have greater than MaxStudents for that course raise an error.
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'RegisterStudent')
