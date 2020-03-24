@@ -187,16 +187,17 @@ AS
         DECLARE @CourseCost     money
         -- Assign a value to each of the local variables
         SELECT @MaxStudents = MaxStudents FROM Course WHERE CourseId = @CourseID
+        --SET @MaxStudent=(SELECT MaxStudent FROM Course WHERE CourseId=@CourseID) subquery
         SELECT @CurrentCount = COUNT (StudentID) FROM Registration WHERE CourseId = @CourseID AND Semester = @Semester
         SELECT @CourseCost = CourseCost FROM Course WHERE CourseId = @CourseID
 
-        IF @MaxStudents >= @currentcount 
+        IF @MaxStudents <= @currentcount 
         BEGIN
             RAISERROR('The course is already full', 16, 1)
         END
         ELSE
         BEGIN
-            BEGIN TRANSACTION
+            BEGIN TRANSACTION -- Changes will be temporary and can be rolled back
 
             INSERT INTO Registration (StudentID, CourseId, Semester)
             VALUES (@StudentID, @CourseID, @Semester)
@@ -219,7 +220,7 @@ AS
                 END
                 ELSE
                 BEGIN
-                    COMMIT TRANSACTION
+                    COMMIT TRANSACTION -- Make changes permanent
                 END
             END
         END
@@ -227,6 +228,24 @@ AS
 RETURN
 
 GO
+--Test Stored procedure
+SELECT * FROM Registration
+SELECT * FROM Student
+SELECT * FROM Course WHERE CourseId = 'DMIT152'
+EXEC RegisterStudent 199912010,'DMIT152','2004J' 
+EXEC RegisterStudent 199966250,'DMIT152','2004J' 
+EXEC RegisterStudent 200011730,'DMIT152','2004J' 
+EXEC RegisterStudent 200122100,'DMIT152','2004J' 
+EXEC RegisterStudent 200312345,'DMIT152','2004J'  -- class already full at this point and this one triggers the error
+/*
+200322620
+200494470
+200494476
+200495500
+200522220
+200578400
+200645320
+*/
 
 -- 4. Add a stored procedure called WitnessProtection that erases all existence of a student from the database. The stored procedure takes the StudentID, first and last names, gender, and birthdate as parameters. Ensure that the student exists in the database before removing them (all the parameter values must match).
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'WitnessProtection')
@@ -258,7 +277,7 @@ AS
         ELSE
         BEGIN
             BEGIN TRANSACTION
-            DELETE  Registration 
+            DELETE FROM Registration 
             WHERE   StudentID = @StudentID
             IF @@ERROR <> 0
             BEGIN
@@ -267,7 +286,7 @@ AS
             END
             ELSE
             BEGIN
-                DELETE Payment
+                DELETE FROM Payment
                 WHERE  StudentID = @StudentID 
                 IF @@ERROR <> 0
                 BEGIN
@@ -276,7 +295,7 @@ AS
                 END
                 ELSE
                 BEGIN
-                    DELETE Activity
+                    DELETE FROM Activity
                     WHERE  StudentID = @StudentID
                     IF @@ERROR <> 0
                     BEGIN
@@ -285,7 +304,7 @@ AS
                     END
                     ELSE
                     BEGIN    
-                        DELETE Student
+                        DELETE FROM Student
                         WHERE  StudentID = @StudentID
                         IF @@ERROR <> 0
                         BEGIN
@@ -359,7 +378,7 @@ CREATE PROCEDURE WithdrawStudent
     @Semester   char(5)
 AS
     -- Declare a bunch of local/temp variables
-    DECLARE @coursecost     decimal (6,2)
+    DECLARE @coursecost     decimal (6,2) -- basically equivalent to the money data type
     DECLARE @amount         decimal(6,2)
     DECLARE @balanceowing   decimal(6,2)
     DECLARE @difference     decimal(6,2)
@@ -434,7 +453,7 @@ GO
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ArchiveGrade')
     DROP TABLE ArchiveGrade
 
-CREATE TABLE ArchiveGrade
+CREATE TABLE ArchiveGrade -- no PK, no FK, no CHECK
 (
     StudentID        int,
     CourseId        char (7),

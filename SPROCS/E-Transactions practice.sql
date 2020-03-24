@@ -93,3 +93,100 @@ SELECT * from Activity
 EXEC DisolveClub 'CSS'
 EXEC DisolveClub 'NASA1'
 EXEC DisolveClub 'AWW'
+
+
+
+
+-- 2. In response to recommendations in our business practices, we are required to create an audit record of all changes to the Payment table. As such, all updates and deletes from the payment table will have to be performed through stored procedures rather than direct table access. For these stored procedures, you will need to use the following PaymentHistory table.
+CREATE TABLE PaymentHistory
+(
+    AuditID         int
+        CONSTRAINT PK_PaymentHistory
+        PRIMARY KEY
+        IDENTITY(10000,1)
+                                NOT NULL,
+    PaymentID       int         NOT NULL,
+    PaymentDate     datetime    NOT NULL,
+    PriorAmount     money       NOT NULL,
+    PaymentTypeID   tinyint     NOT NULL,
+    StudentID       int         NOT NULL,
+    DMLAction       char(6)     NOT NULL
+        CONSTRAINT CK_PaymentHistory_DMLAction
+            CHECK  (DMLAction IN ('UPDATE', 'DELETE'))
+)
+GO
+
+
+-- 2.a. Create a stored procedure called UpdatePayment that has a parameter to match each column in the Payment table. This stored procedure must first record the specified payment's data in the PaymentHistory before applying the update to the Payment table itself.
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'UpdatePayment')
+    DROP TABLE UpdatePayment
+ GO
+    CREATE PROCEDURE UpdatePayment
+   
+    @PaymentID  int,
+    @PaymentDate datetime,
+    @Amount decimal,
+    @PaymentTypeID tinyint,
+    @StudentID int
+AS
+    IF (@PaymentID IS NULL OR @PaymentDate IS NULL OR @Amount IS NULL OR @PaymentTypeID IS NULL OR @StudentID IS NULL)
+        BEGIN
+        RAISERROR('All parameters are required',16,1)
+        END
+    ELSE
+        BEGIN
+            BEGIN TRANSACTION
+        INSERT INTO PaymentHistory(PaymentID,PaymentDate,PriorAmount,PaymentTypeID,StudentID)
+        VALUES(@PaymentID,GETDATE(),@Amount,@PaymentTypeID,@StudentID)
+            IF @@ERROR <> 0
+                BEGIN
+            RAISERROR('Unable to update payment information',16,1)
+            ROLLBACK TRANSACTION
+                 END
+         ELSE 
+           BEGIN
+                COMMIT TRANSACTION
+           END
+       END
+    GO
+
+-- 2.b. Create a stored procedure called DeletePayment that has a parameter identifying the payment ID and the student ID. This stored procedure must first record the specified payment's data in the PaymentHistory before removing the payment from the Payment table.
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'DeletePayment')
+    DROP TABLE DeletePayment
+ GO
+    CREATE PROCEDURE DeletePayment
+   
+    @PaymentID  int,
+    @PaymentDate datetime,
+    @Amount decimal,
+    @PaymentTypeID tinyint,
+    @StudentID int
+AS
+        IF (@PaymentID IS NULL OR @PaymentDate IS NULL OR @Amount IS NULL OR @PaymentTypeID IS NULL OR @StudentID IS NULL)
+        BEGIN
+        RAISERROR('All parameters are required',16,1)
+        END
+    ELSE
+
+
+-- 3. Create a stored procedure called ArchivePayments. This stored procedure must transfer all payment records to the StudentPaymentArchive table. After archiving, delete the payment records.
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'StudentPaymentArchive')
+    DROP TABLE StudentPaymentArchive
+
+CREATE TABLE StudentPaymentArchive
+(
+    ArchiveId       int
+        CONSTRAINT PK_StudentPaymentArchive
+        PRIMARY KEY
+        IDENTITY(1,1)
+                                NOT NULL,
+    StudentID       int         NOT NULL,
+    FirstName       varchar(25) NOT NULL,
+    LastName        varchar(35) NOT NULL,
+    PaymentMethod   varchar(40) NOT NULL,
+    Amount          money       NOT NULL,
+    PaymentDate     datetime    NOT NULL
+)
