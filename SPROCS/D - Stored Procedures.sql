@@ -199,20 +199,24 @@ GO
 CREATE PROCEDURE OverActiveMembers
 @ClubCount int 
 AS 
-    IF @ClubCount IS NULL
-     RAISERROR('Club ID not valid', 16, 1)
-     ELSE
+        IF @ClubCount IS NULL
+        BEGIN
+        RAISERROR('Club ID not valid', 16, 1)
+        END
+    ELSE
         IF @ClubCount<0
+        BEGIN
         RAISERROR('Club ID cannot be less than 0',16,1)
-        ELSE
-            BEGIN 
-                SELECT S.FirstName+ ' '+ S.LastName AS 'Student Name'
+        END
+     ELSE
+        BEGIN 
+        SELECT S.FirstName+ ' '+ S.LastName AS 'Student Name'
                     FROM Student AS S
                     INNER JOIN Activity AS A ON S.StudentID=A.StudentID
                     GROUP BY A.StudentID,S.FirstName,S.LastName
                     HAVING COUNT(A.ClubID) >=@ClubCount
         END
-        RETURN 
+     RETURN 
 GO
 
 EXEC OverActiveMembers NULL
@@ -228,20 +232,34 @@ GO
 CREATE PROCEDURE ListStudentsWithoutClubs
  AS
         BEGIN 
-        SELECT S.FirstName + ' '+ S.LastName AS 'Student Name'
-            FROM Student AS S
-                INNER JOIN Activity AS A ON S.StudentID=A.StudentID
-                WHERE A.ClubId IS NULL
-                GROUP BY A.StudentID,S.FirstName,S.LastName  
+        SELECT FirstName + ' '+ LastName AS 'Student Name'
+            FROM Student
+                WHERE StudentID NOT IN (SELECT DISTINCT StudentID from Activity)
             END
             RETURN 
             GO
 
-EXEC ListStudentsWithoutClubs 
+EXEC ListStudentsWithoutClubs
   
 
-  SELECT * from Student
 
 -- 6) Create a stored procedure called LookupStudent that accepts a partial student last name and returns a list of all students whose last name includes the partial last name. Return the student first and last name as well as their ID.
 
+ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'LookupStudent')
+    DROP PROCEDURE LookupStudent
+GO
+CREATE PROCEDURE LookupStudent
+@PartialLastName varchar(35)
+ AS
+           IF @PartialLastName IS NULL OR LEN (@PartialLastName)=0
+           RAISERROR('Incorrect data provided',16,1)
+           ELSE
+            SELECT Lastname + ' ' +FirstName AS 'Student Name' 
+            FROM Student
+            WHERE LastName LIKE '%' + @PartialLastName + '%'
+RETURN
+GO
 
+EXEC LookupStudent 'oo'
+EXEC LookupStudent ''
+EXEC LookupStudent NULL
