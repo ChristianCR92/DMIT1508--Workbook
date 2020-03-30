@@ -180,9 +180,9 @@ CREATE PROCEDURE CorrectStudentName
     @FirstName      varchar(25),
     @LastName       varchar(35)
 AS
-    IF @StudentId IS NULL OR @FirstName IS NULL OR @LastName IS NULL
-        RAISERROR('All parameters are required.', 16, 1)
-    ELSE IF NOT EXISTS (SELECT StudentID FROM Student WHERE StudentID = @StudentId)
+        IF @StudentId IS NULL OR @FirstName IS NULL OR @LastName IS NULL
+            RAISERROR('All parameters are required.', 16, 1)
+        ELSE IF NOT EXISTS (SELECT StudentID FROM Student WHERE StudentID = @StudentId)
     --The EXISTS  function will return true if there are 1 or more rows, otherwise it will return false
         RAISERROR('That student id does not exist', 16, 1)
     ELSE

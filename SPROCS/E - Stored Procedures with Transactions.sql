@@ -2,9 +2,9 @@
 -- Demonstrate using Transactions in a Stored Procedure
 
 --WHAT IS A TRANSACTION?
--- A transaction must fail or succeed as a group
---A transaction is tipically needed when we do two or more of an Insert/Update/Delete
- -- How do we start a transaction
+    -- A transaction must fail or succeed as a group
+    --A transaction is tipically needed when we do two or more of an Insert/Update/Delete
+     -- How do we start a transaction
  -- BEGIN TRANSACTION
  --     The BEGIN TRANSACTION only needs to be stated once
  -- To make a transaction succeed, we use the statement COMMIT TRANSACTION
