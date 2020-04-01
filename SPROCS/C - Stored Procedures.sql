@@ -109,16 +109,16 @@ GO
 CREATE PROCEDURE FindCourse
 @PartialName varchar(20)
 AS
-        IF @PartialName IS NULL
-        BEGIN
-        RAISERROR('All parameters required',16,1)
-        END
+            IF @PartialName IS NULL
+                 BEGIN
+                     RAISERROR('All parameters required',16,1)
+                 END
         ELSE
-        BEGIN 
-            SELECT CourseId,CourseName
-                FROM Course
+             BEGIN 
+                    SELECT CourseId,CourseName
+                    FROM Course
                     WHERE CourseName LIKE '%programming%'
-         END
+             END
         RETURN
         GO
 

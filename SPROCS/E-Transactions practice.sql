@@ -205,8 +205,8 @@ AS
                 DELETE FROM Payment WHERE PaymentID=@PaymentID AND PaymentDate=@PaymentDate AND Amount=@Amount AND PaymentTypeID=@PaymentTypeID AND StudentID=@StudentID
             IF @@ERROR <> 0 OR @@ROWCOUNT=0 -- there's a problem
                  BEGIN
-                ROLLBACK TRANSACTION
                 RAISERROR('Unable to delete club',16,1)
+                ROLLBACK TRANSACTION
             END
          ELSE
             BEGIN
