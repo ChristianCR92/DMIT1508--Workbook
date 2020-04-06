@@ -119,6 +119,10 @@ EXEC DisolveClub 'AWW'
 
 
 -- 2. In response to recommendations in our business practices, we are required to create an audit record of all changes to the Payment table. As such, all updates and deletes from the payment table will have to be performed through stored procedures rather than direct table access. For these stored procedures, you will need to use the following PaymentHistory table.
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'PaymentHistory')
+  DROP TABLE  PaymentHistory
+
 CREATE TABLE PaymentHistory
 (
     AuditID         int
@@ -141,15 +145,14 @@ GO
 -- 2.a. Create a stored procedure called UpdatePayment that has a parameter to match each column in the Payment table. This stored procedure must first record the specified payment's data in the PaymentHistory before applying the update to the Payment table itself.
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'UpdatePayment')
-    DROP TABLE UpdatePayment
- GO
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'UpdatePayment')
+    DROP PROCEDURE UpdatePayment
+GO
     CREATE PROCEDURE UpdatePayment
-   
     @PaymentID  int,
     @PaymentDate datetime,
-    @Amount decimal,
-    @PaymentTypeID tinyint,
+    @Amount money,
+    @PaymentTypeID int,
     @StudentID int
 AS
     IF (@PaymentID IS NULL OR @PaymentDate IS NULL OR @Amount IS NULL OR @PaymentTypeID IS NULL OR @StudentID IS NULL)
@@ -159,42 +162,61 @@ AS
     ELSE
         BEGIN
             BEGIN TRANSACTION
-        INSERT INTO PaymentHistory(PaymentID,PaymentDate,PriorAmount,PaymentTypeID,StudentID)
-        VALUES(@PaymentID,GETDATE(),@Amount,@PaymentTypeID,@StudentID)
+        INSERT INTO PaymentHistory(PaymentID,PaymentDate,PriorAmount,PaymentTypeID,StudentID,DMLAction)
+        SELECT PaymentID,PaymentDate,Amount,PaymentTypeID,StudentID, 'UPDATE'
+        FROM Payment
+        WHERE PaymentID=@PaymentID
             IF @@ERROR <> 0 OR @@ROWCOUNT =0
                 BEGIN
-            RAISERROR('Unable to update payment information',16,1)
-            ROLLBACK TRANSACTION
+                     RAISERROR('Unable to update payment information',16,1)
+                     ROLLBACK TRANSACTION
                  END
          ELSE 
-           BEGIN
-                COMMIT TRANSACTION
-           END
-       END
-    GO
+         BEGIN
+         UPDATE Payment
+         SET PaymentDate=@PaymentDate,
+             Amount=@Amount,
+             @PaymentTypeID=@PaymentTypeID,
+             StudentID=@StudentID
+             WHERE PaymentID=@PaymentID
+                IF @@ERROR <> 0 OR @@ROWCOUNT=0
+                    BEGIN
+                        RAISERROR('Unable to update payment record',16,1)
+                    END
+                ELSE
+                    BEGIN
+                        COMMIT TRANSACTION
+                    END
+            END
+        END
+RETURN
+GO
+EXEC UpdatePayment 13,'2000-09-01 12:20:00.000',450.00,4,199899200
+
+SELECT * FROM PaymentHistory 
+SELECT * from Payment
 
 -- 2.b. Create a stored procedure called DeletePayment that has a parameter identifying the payment ID and the student ID. This stored procedure must first record the specified payment's data in the PaymentHistory before removing the payment from the Payment table.
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'DeletePayment')
-    DROP TABLE DeletePayment
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = N'PROCEDURE' AND ROUTINE_NAME = 'DeletePayment')
+    DROP PROCEDURE DeletePayment
  GO
     CREATE PROCEDURE DeletePayment
    
     @PaymentID  int,
-    @PaymentDate datetime,
-    @Amount decimal,
-    @PaymentTypeID tinyint,
     @StudentID int
 AS
-       IF (@PaymentID IS NULL OR @PaymentDate IS NULL OR @Amount IS NULL OR @PaymentTypeID IS NULL OR @StudentID IS NULL)
+       IF (@PaymentID IS NULL OR @StudentID IS NULL)
            BEGIN
             RAISERROR('All parameters are required',16,1)
          END
     ELSE
         BEGIN 
             BEGIN TRANSACTION  
-             INSERT INTO PaymentHistory(PaymentID,PaymentDate,PriorAmount,PaymentTypeID,StudentID)
-        VALUES(@PaymentID,GETDATE(),@Amount,@PaymentTypeID,@StudentID)
+             INSERT INTO PaymentHistory(PaymentID,PaymentDate,PriorAmount,PaymentTypeID,StudentID,DMLAction)
+               SELECT PaymentID,PaymentDate,Amount,PaymentTypeID,StudentID,'DELETE'
+               FROM Payment
+               WHERE PaymentID=@PaymentID
             IF @@ERROR <> 0 OR @@ROWCOUNT =0
             BEGIN
                     RAISERROR('Unable to update payment information',16,1)
@@ -202,10 +224,11 @@ AS
              END
          ELSE 
            BEGIN
-                DELETE FROM Payment WHERE PaymentID=@PaymentID AND PaymentDate=@PaymentDate AND Amount=@Amount AND PaymentTypeID=@PaymentTypeID AND StudentID=@StudentID
-            IF @@ERROR <> 0 OR @@ROWCOUNT=0 -- there's a problem
+                DELETE FROM Payment 
+                WHERE PaymentID=@PaymentID AND StudentID=@StudentID
+            IF @@ERROR <> 0 OR @@ROWCOUNT=0 
                  BEGIN
-                RAISERROR('Unable to delete club',16,1)
+                     RAISERROR('Unable to delete club',16,1)
                 ROLLBACK TRANSACTION
             END
          ELSE
@@ -216,7 +239,6 @@ AS
        END
       RETURN
     GO
-
 
 -- 3. Create a stored procedure called ArchivePayments. This stored procedure must transfer all payment records to the StudentPaymentArchive table. After archiving, delete the payment records.
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'StudentPaymentArchive')
@@ -236,7 +258,7 @@ CREATE TABLE StudentPaymentArchive
     Amount          money       NOT NULL,
     PaymentDate     datetime    NOT NULL
 )
-/*
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ArchivePayments')
     DROP TABLE ArchivePayments
  GO
@@ -245,19 +267,28 @@ AS
     BEGIN 
         BEGIN TRANSACTION
         INSERT INTO StudentPaymentArchive(StudentID,FirstName,LastName,PaymentMethod,Amount,PaymentDate)
-            SELECT P.StudentID,S.FirstName,S.LastName,P.PaymentTypeID,P.Amount,P.PaymentDate
+            SELECT S.StudentID,S.FirstName,S.LastName,PT.PaymentTypeDescription,P.Amount,P.PaymentDate
                 FROM Student AS S
                     INNER JOIN Payment AS P ON S.StudentID= P.StudentID
-                   WHERE P.StudentID IS NOT NULL AND S.FirstName IS NOT NULL AND S.LastName IS NOT NULL AND P.PaymentTypeID IS NOT NULL AND P.Amount IS NOT NULL AND P.PaymentDate IS NOT NULL
-         IF @@ERROR<>0
-            BEGIN
-            RAISERROR('Unable to update table',16,1)
-            ROLLBACK TRANSACTION
-            END
-         END
+                        INNER JOIN PaymentType AS PT ON P.PaymentTypeID=PT.PaymentTypeID
+                            IF @@ERROR<>0 OR @@ROWCOUNT=0
+                        BEGIN
+                            RAISERROR('Unable to update table',16,1)
+                            ROLLBACK TRANSACTION
+                        END
         ELSE
+             BEGIN
+                DELETE Payment
+                IF @@ERROR<>0 OR @@ROWCOUNT=0
                 BEGIN
-                DELETE FROM Payment WHERE 
+                    RAISERROR('Unable to remove all payment records',16,1)
+                    ROLLBACK TRANSACTION
+                 END
+                ELSE
+                 BEGIN
+                    COMMIT TRANSACTION
                 END
-
-                */
+            END
+        END
+     RETURN 
+     GO
